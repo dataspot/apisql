@@ -55,7 +55,7 @@ class APISQLBlueprint(Blueprint):
                 sql = codecs.decode(sql.encode('ascii'), 'base64').decode('utf8')
             except Exception:
                 pass
-            results = self.controllers.query_db(sql, max_rows=num_rows)
+            results = self.controllers.query_db(sql, num_rows=num_rows)
         return jsonpify(results)
 
     def download(self):
