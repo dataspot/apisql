@@ -14,7 +14,7 @@ from .controllers import Controllers
 from .logger import logger, logging
 
 MAX_ROWS = int(os.environ.get('APISQL__MAX_ROWS', 100))
-CONNECTION_STRING = int(os.environ.get('APISQL__DATABASE_URL'))
+CONNECTION_STRING = os.environ.get('APISQL__DATABASE_URL')
 
 
 class APISQLBlueprint(Blueprint):
