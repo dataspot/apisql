@@ -25,7 +25,8 @@ INSTALL_REQUIRES = [
     'psycopg2-binary>=2.6.2,<3.0.0',
     'flask-cors>=3.0.2,<4.0.0',
     'flask_jsonpify',
-    'XlsxWriter'
+    'XlsxWriter',
+    'backports.cached-property',
 ]
 LINT_REQUIRES = [
     'pylama',

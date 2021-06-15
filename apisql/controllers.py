@@ -1,7 +1,7 @@
 import re
 from decimal import Decimal
 from datetime import date
-from functools import cached_property
+from backports.cached_property import cached_property
 from itertools import islice
 
 from sqlalchemy import create_engine
