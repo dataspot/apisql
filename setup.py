@@ -24,7 +24,7 @@ INSTALL_REQUIRES = [
     'Flask-SQLAlchemy>=2.1,<3.0',
     'psycopg2-binary>=2.6.2,<3.0.0',
     'flask-cors>=3.0.2,<4.0.0',
-    'flask_jsonpify'
+    'flask_jsonpify',
     'XlsxWriter'
 ]
 LINT_REQUIRES = [
