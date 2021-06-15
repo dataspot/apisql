@@ -51,7 +51,7 @@ class Controllers():
                 logger.debug('executing %r', query)
                 result = connection.execute(query)
                 rows = list(map(dict, islice(iter(result), 0, num_rows)))
-                rows = [logger.jsonable(row) for row in rows]
+                rows = [self.jsonable(row) for row in rows]
                 logger.debug('rowcount %r', len(rows))
         except Exception as e:
             return {
