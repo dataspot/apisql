@@ -22,7 +22,7 @@ Query parameters that can be send:
 - **query**: The SQL query to execute on the DB. The query can be provided in plain text or base64 encoded.
 - **format**: Either `csv` or `xlsx`. Defaults to `csv`.
 - **filename**: The filename for the file to be downloaded, *without the extension*. Defaults to `query-results`.
-- **formatters**: A semicolon separated list of the headers for the output file. Headers should match the field names that appear in the query.
+- **headers**: A semicolon separated list of the headers for the output file. Headers should match the field names that appear in the query.
   Headers may contain one or more modifiers, which appear after a colon. The currently supported modifiers are:
   - `number`, to convert numeric values to strings
   - `yesno`, which converts boolean values to "Yes" / "No"
@@ -35,7 +35,7 @@ For the following SQL:
 select employee_name as "Employee Name", employee_salary as "Salary", is_manager as "Managerial role?" from employees
 ```
 
-`formatters` could be specified as `Employee Name;Managerial role?:yesno;Salary:number`.
+`headers` could be specified as `Employee Name;Managerial role?:yesno;Salary:number`.
 
 ## configuration
 
