@@ -28,11 +28,18 @@ class APISQLBlueprint(Blueprint):
             logger.setLevel(logging.DEBUG)
         else:
             logger.setLevel(logging.INFO)
+        self.max_rows = max_rows
 
         self.add_url_rule(
             '/query',
             'query',
             self.query,
+            methods=['GET']
+        )
+        self.add_url_rule(
+            '/download',
+            'download',
+            self.download,
             methods=['GET']
         )
 
