@@ -47,15 +47,17 @@ class APISQLBlueprint(Blueprint):
         results = dict(total=0, rows=[])
         if not self.detect_bot():
             try:
-                num_rows = int(request.values['num_rows'])
+                num_rows = int(request.values.get('num_rows', self.max_rows))
+                page_size = int(request.values.get('page_size', num_rows))
+                page = int(request.values.get('page', 0))
             except Exception:
-                num_rows = self.max_rows
+                abort(400)
             sql = request.values.get('query')
             try:
                 sql = codecs.decode(sql.encode('ascii'), 'base64').decode('utf8')
             except Exception:
                 pass
-            results = self.controllers.query_db(sql, num_rows=num_rows)
+            results = self.controllers.query_db(sql, num_rows=num_rows, page_size=page_size, page=page)
         return jsonpify(results)
 
     def download(self):

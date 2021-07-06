@@ -1,4 +1,5 @@
 import re
+import math
 from decimal import Decimal
 from datetime import date
 from backports.cached_property import cached_property
@@ -39,15 +40,20 @@ class Controllers():
             logger.exception('EXC')
             raise
 
-    def query_db(self, query_str, num_rows):
+    def query_db(self, query_str, num_rows, page_size, page):
         try:
             with self.engine.connect() as connection:
-                num_rows = min(num_rows, self.max_rows)
-                query = "select * from (%s) s limit %s" % (query_str, num_rows)
                 count_query = "select count(1) from (%s) s" % query_str
                 logger.debug('executing %r', count_query)
                 count = connection.execute(count_query).fetchone()[0]
                 logger.debug('count %r', count)
+
+                num_rows = min(num_rows, self.max_rows, page_size)
+                pages = math.ceil(count / num_rows)
+                page = min(page, pages-1)
+                page = max(page, 0)
+                offset = page * page_size
+                query = "select * from (%s) s limit %s offset %s" % (query_str, num_rows, offset)
                 logger.debug('executing %r', query)
                 result = connection.execute(query)
                 rows = list(map(dict, islice(iter(result), 0, num_rows)))
@@ -61,6 +67,9 @@ class Controllers():
         return {
             'success': True,
             'total': count,
+            'pages': pages,
+            'page_size': num_rows,
+            'page': page,
             'rows': rows,
         }
 
