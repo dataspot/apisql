@@ -81,6 +81,7 @@ class Controllers():
             field = self.FIELD_RE.findall(h)
             if len(field) == 1:
                 field = field[0]
+                h = h[:-(len(field)+1)]
             else:
                 field = None
             matches = self.PARAM_RE.findall(h)
