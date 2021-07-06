@@ -13,6 +13,8 @@ Returns query results in json format.
 Query parameters that can be send:
 - **query**: The SQL query to execute on the DB. The query can be provided in plain text or base64 encoded.
 - **num_rows**: The maximum number of rows to return. If not specified, will return the aount defined in the configuration, the amount defined in the environment variable `APISQL__MAX_ROWS` or 100.
+- **page_size**: The size of the 'page', when doing paging. By default will use `num_rows` and in any way the page size it won't exceed `num_rows`.
+- **page**: Which page to fetch, starting from page 0
 
 ### `/download`
 
@@ -27,6 +29,11 @@ Query parameters that can be send:
   - `number`, to convert numeric values to strings
   - `yesno`, which converts boolean values to "Yes" / "No"
   - `comma-separated`, which converts arrays of strings to a comma separated list of these strings.
+  Finally, the content for a column may be fetched from a different field in the query output, by specifying the field name after a `<` character.
+
+  Example:
+  `Fiscal Year:number<fiscal_year;Leap Year:yesno<0;`
+
 
 
 **Example:**

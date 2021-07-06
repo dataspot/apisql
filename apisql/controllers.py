@@ -12,6 +12,7 @@ from .logger import logger
 
 class Controllers():
 
+    FIELD_RE = re.compile('<([-a-z()_]+)$')
     PARAM_RE = re.compile(':([-a-z()_]+)$')
 
     def __init__(self, connection_string, max_rows, debug):
@@ -77,6 +78,11 @@ class Controllers():
         _headers = []
         _formatters = []
         for h in formatters:
+            field = self.FIELD_RE.findall(h)
+            if len(field) == 1:
+                field = field[0]
+            else:
+                field = None
             matches = self.PARAM_RE.findall(h)
             funcs = []
             while len(matches) > 0:
@@ -84,7 +90,7 @@ class Controllers():
                 h = h[:-(len(mod)+1)]
                 funcs.append(self.formatter(mod))
                 matches = self.PARAM_RE.findall(h)
-            f = self.getter(h)
+            f = self.getter(field or h)
             for g in reversed(funcs):
                 f = self.compose(f, g)
             k = self.wrapper(f)
