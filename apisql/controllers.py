@@ -85,7 +85,7 @@ class Controllers():
             else:
                 field = None
             matches = self.PARAM_RE.findall(h)
-            funcs = []
+            funcs = [self.formatter('')]
             while len(matches) > 0:
                 mod = matches[0]
                 h = h[:-(len(mod)+1)]
@@ -119,7 +119,7 @@ class Controllers():
     def formatter(self, mod):
         if mod == 'number':
             def _f(x, row):
-                return str(x)
+                return str(x) if x else ''
             return _f
         elif mod == 'yesno':
             def _f(x, row):
@@ -129,6 +129,7 @@ class Controllers():
             def _f(x, row):
                 if x and isinstance(x, list):
                     return ','.join(x)
+                return x
             return _f
         else:
             def _f(x, row):
