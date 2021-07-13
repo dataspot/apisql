@@ -132,7 +132,7 @@ class Controllers():
             return _f
         else:
             def _f(x, row):
-                return str(x)
+                return str(x) if x else ''
             return _f
 
     def jsonable(self, obj):
