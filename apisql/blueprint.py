@@ -115,7 +115,7 @@ class APISQLBlueprint(Blueprint):
             return Response(generate(),
                             content_type='text/csv', headers=headers)
         if format == 'xlsx':
-            with tempfile.NamedTemporaryFile(mode='w+b', suffix='.xslx') as out:
+            with tempfile.NamedTemporaryFile(mode='w+b', suffix='.xlsx') as out:
                 try:
                     workbook = xlsxwriter.Workbook(out.name)
                     worksheet = workbook.add_worksheet()
