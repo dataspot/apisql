@@ -15,13 +15,16 @@ class Controllers():
     FIELD_RE = re.compile('<([-a-z()_]+)$')
     PARAM_RE = re.compile(':([-a-z()_]+)$')
 
-    def __init__(self, connection_string, max_rows, debug):
+    def __init__(self, connection_string, max_rows, debug, engine):
         self.connection_string = connection_string
+        self.engine_ = engine
         self.max_rows = max_rows
         self.debug = debug
 
     @cached_property
     def engine(self):
+        if self.engine_:
+            return self.engine_
         return create_engine(self.connection_string, pool_size=20, max_overflow=0)
 
     def query_db_streaming(self, query_str, formatters):

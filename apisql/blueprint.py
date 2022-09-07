@@ -19,10 +19,10 @@ CONNECTION_STRING = os.environ.get('APISQL__DATABASE_URL')
 
 class APISQLBlueprint(Blueprint):
 
-    def __init__(self, connection_string=CONNECTION_STRING, max_rows=MAX_ROWS, debug=False):
+    def __init__(self, connection_string=CONNECTION_STRING, engine=None, max_rows=MAX_ROWS, debug=False):
         super().__init__('apisql', 'apisql')
         self.controllers = Controllers(
-            connection_string, max_rows, debug
+            connection_string, max_rows, debug, engine
         )
         if debug:
             logger.setLevel(logging.DEBUG)
