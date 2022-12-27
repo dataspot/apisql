@@ -128,7 +128,7 @@ class APISQLBlueprint(Blueprint):
                                     worksheet.write(i, j, str(v))
                 finally:
                     workbook.close()
-                return send_file(out.name, mimetype=mime, as_attachment=True, attachment_filename=file_name + '.xlsx')
+                return send_file(out.name, mimetype=mime, as_attachment=True, download_name=file_name + '.xlsx')
 
     def detect_bot(self):
         if request.user_agent.browser in ('google', 'aol', 'baidu', 'bing', 'yahoo'):
