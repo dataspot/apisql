@@ -34,13 +34,13 @@ class APISQLBlueprint(Blueprint):
             '/query',
             'query',
             self.query,
-            methods=['GET']
+            methods=['GET', 'POST']
         )
         self.add_url_rule(
             '/download',
             'download',
             self.download,
-            methods=['GET']
+            methods=['GET', 'POST']
         )
 
     def query(self):
