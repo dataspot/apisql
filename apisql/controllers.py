@@ -60,7 +60,7 @@ class Controllers():
                 query = text("select * from (%s) s limit %s offset %s" % (query_str, num_rows, offset))
                 logger.debug('executing %r', query)
                 result = connection.execute(query)
-                rows = list(map(dict, islice(iter(result), 0, num_rows)))
+                rows = list(map(lambda r: r._asdict(), islice(iter(result), 0, num_rows)))
                 rows = [self.jsonable(row) for row in rows]
                 logger.debug('rowcount %r', len(rows))
         except Exception as e:
