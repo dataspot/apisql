@@ -5,7 +5,7 @@ from datetime import date
 from backports.cached_property import cached_property
 from itertools import islice
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 from .logger import logger
 
@@ -47,7 +47,7 @@ class Controllers():
     def query_db(self, query_str, num_rows, page_size, page):
         try:
             with self.engine.connect() as connection:
-                count_query = "select count(1) from (%s) s" % query_str
+                count_query = text("select count(1) from (%s) s" % query_str)
                 logger.debug('executing %r', count_query)
                 count = connection.execute(count_query).fetchone()[0]
                 logger.debug('count %r', count)
@@ -57,7 +57,7 @@ class Controllers():
                 page = min(page, pages-1)
                 page = max(page, 0)
                 offset = page * page_size
-                query = "select * from (%s) s limit %s offset %s" % (query_str, num_rows, offset)
+                query = text("select * from (%s) s limit %s offset %s" % (query_str, num_rows, offset))
                 logger.debug('executing %r', query)
                 result = connection.execute(query)
                 rows = list(map(dict, islice(iter(result), 0, num_rows)))
