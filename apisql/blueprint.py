@@ -19,7 +19,7 @@ CONNECTION_STRING = os.environ.get('APISQL__DATABASE_URL')
 
 class APISQLBlueprint(Blueprint):
 
-    def __init__(self, connection_string=CONNECTION_STRING, engine=None, max_rows=MAX_ROWS, debug=False):
+    def __init__(self, connection_string=CONNECTION_STRING, engine=None, max_rows=MAX_ROWS, debug=False, cache=None):
         super().__init__('apisql', 'apisql')
         self.controllers = Controllers(
             connection_string, max_rows, debug, engine
@@ -42,6 +42,7 @@ class APISQLBlueprint(Blueprint):
             self.download,
             methods=['GET', 'POST']
         )
+        self.cache = cache
 
     def query(self):
         results = dict(total=0, rows=[])
@@ -57,7 +58,13 @@ class APISQLBlueprint(Blueprint):
                 sql = codecs.decode(sql.encode('ascii'), 'base64').decode('utf8')
             except Exception:
                 pass
-            results = self.controllers.query_db(sql, num_rows=num_rows, page_size=page_size, page=page)
+            key = '::'.join([sql, str(num_rows), str(page_size), str(page)])
+            if self.cache is not None:
+                results = self.cache.get(key)
+            if results is None:
+                results = self.controllers.query_db(sql, num_rows=num_rows, page_size=page_size, page=page)
+                if self.cache is not None:
+                    self.cache.set(key, results)
         return jsonpify(results)
 
     def download(self):
