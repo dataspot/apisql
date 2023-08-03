@@ -38,7 +38,7 @@ class Controllers():
                 yield headers
                 yield from (
                     [f(row) for f in formatters]
-                    for row in map(self.jsonable, map(dict, result))
+                    for row in map(self.jsonable, map(lambda r: r._asdict(), result))
                 )
         except Exception:
             logger.exception('EXC')
