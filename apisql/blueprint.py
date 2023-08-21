@@ -45,6 +45,7 @@ class APISQLBlueprint(Blueprint):
         self.cache = cache
 
     def query(self):
+        status = []
         results = dict(total=0, rows=[])
         if not self.detect_bot():
             try:
@@ -56,16 +57,23 @@ class APISQLBlueprint(Blueprint):
             sql = request.values.get('query')
             try:
                 sql = codecs.decode(sql.encode('ascii'), 'base64').decode('utf8')
+                status.push('base64 query')
             except Exception:
+                status.push('plaintext query')
                 pass
             key = '::'.join([sql, str(num_rows), str(page_size), str(page)])
             if self.cache is not None:
                 results = self.cache.get(key)
+                status.push('cache hit')
             if results is None:
+                if self.cache is not None:
+                    status.push('cache miss')
                 results = self.controllers.query_db(sql, num_rows=num_rows, page_size=page_size, page=page)
                 if self.cache is not None:
                     self.cache.set(key, results)
-        return jsonpify(results)
+        else:
+            status.push('Bot detected')
+        return jsonpify(dict(**results, status=status))
 
     def download(self):
         format = request.values.get('format', 'csv')
