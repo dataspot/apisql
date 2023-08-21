@@ -65,7 +65,9 @@ class APISQLBlueprint(Blueprint):
             if self.cache is not None:
                 results = self.cache.get(key)
                 status.append('cache hit')
-            if results is None:
+            else:
+                status.append('no cache')
+            if results is None or self.cache is None:
                 if self.cache is not None:
                     status.append('cache miss')
                 results = self.controllers.query_db(sql, num_rows=num_rows, page_size=page_size, page=page)
