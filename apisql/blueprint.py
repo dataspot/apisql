@@ -64,7 +64,6 @@ class APISQLBlueprint(Blueprint):
             key = '::'.join([sql, str(num_rows), str(page_size), str(page)])
             if self.cache is not None:
                 results = self.cache.get(key)
-                status.append('cache hit')
             else:
                 status.append('no cache')
             if results is None or self.cache is None:
@@ -73,6 +72,8 @@ class APISQLBlueprint(Blueprint):
                 results = self.controllers.query_db(sql, num_rows=num_rows, page_size=page_size, page=page)
                 if self.cache is not None:
                     self.cache.set(key, results)
+            else:
+                status.append('cache hit')
         else:
             status.append('Bot detected')
         return jsonpify(dict(**results, status=status))
