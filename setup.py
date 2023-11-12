@@ -21,9 +21,7 @@ def read(*paths):
 PACKAGE = 'apisql'
 NAME = PACKAGE.replace('_', '-')
 INSTALL_REQUIRES = [
-    'Flask-SQLAlchemy>=2.1,<3.0',
-    'psycopg2-binary>=2.6.2,<3.0.0',
-    'flask-cors>=3.0.2,<4.0.0',
+    'psycopg2-binary',
     'flask_jsonpify',
     'XlsxWriter',
     'backports.cached-property',
