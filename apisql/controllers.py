@@ -34,7 +34,7 @@ class Controllers():
             with self.engine.connect() as connection:
                 logger.debug('executing %r', query_str)
                 result = connection.execution_options(stream_results=True)\
-                    .execute(text('select * from (%s)' % query_str))
+                    .execute(text('select * from (%s) s' % query_str))
                 yield headers
                 yield from (
                     [f(row) for f in formatters]
