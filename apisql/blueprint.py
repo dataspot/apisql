@@ -108,45 +108,49 @@ class APISQLBlueprint(Blueprint):
             sql = codecs.decode(sql.encode('ascii'), 'base64').decode('utf8')
         except Exception:
             pass
-        results = self.controllers.query_db_streaming(sql, formatters)
+        try:
+            results = self.controllers.query_db_streaming(sql, formatters)
 
-        if format == 'csv':
-            def generate():
-                buffer = StringIO()
-                writer = csv.writer(buffer)
-                for row in results:
-                    writer.writerow(row)
-                    pos = buffer.tell()
-                    buffer.seek(0)
-                    ret = buffer.read(pos)
-                    buffer.seek(0)
-                    yield ret
+            if format == 'csv':
+                def generate():
+                    buffer = StringIO()
+                    writer = csv.writer(buffer)
+                    for row in results:
+                        writer.writerow(row)
+                        pos = buffer.tell()
+                        buffer.seek(0)
+                        ret = buffer.read(pos)
+                        buffer.seek(0)
+                        yield ret
 
-            # Encode the filename in utf-8 and url encoding
-            file_name_utf8_encoded = file_name.encode('utf-8')
-            file_name_url_encoded = urllib.parse.quote(file_name_utf8_encoded)
+                # Encode the filename in utf-8 and url encoding
+                file_name_utf8_encoded = file_name.encode('utf-8')
+                file_name_url_encoded = urllib.parse.quote(file_name_utf8_encoded)
 
-            headers = {
-                'Content-Type': mime,
-                'Content-Disposition': 'attachment; filename=' + file_name_url_encoded + '.csv'
-            }
-            return Response(generate(),
-                            content_type='text/csv', headers=headers)
-        if format == 'xlsx':
-            with tempfile.NamedTemporaryFile(mode='w+b', suffix='.xlsx') as out:
-                try:
-                    workbook = xlsxwriter.Workbook(out.name)
-                    worksheet = workbook.add_worksheet()
-                    for i, row in enumerate(results):
-                        for j, v in enumerate(row):
-                            if v is not None:
-                                try:
-                                    worksheet.write_number(i, j, float(v))
-                                except ValueError:
-                                    worksheet.write(i, j, str(v))
-                finally:
-                    workbook.close()
-                return send_file(out.name, mimetype=mime, as_attachment=True, download_name=file_name + '.xlsx')
+                headers = {
+                    'Content-Type': mime,
+                    'Content-Disposition': 'attachment; filename=' + file_name_url_encoded + '.csv'
+                }
+                return Response(generate(),
+                                content_type='text/csv', headers=headers)
+            if format == 'xlsx':
+                with tempfile.NamedTemporaryFile(mode='w+b', suffix='.xlsx') as out:
+                    try:
+                        workbook = xlsxwriter.Workbook(out.name)
+                        worksheet = workbook.add_worksheet()
+                        for i, row in enumerate(results):
+                            for j, v in enumerate(row):
+                                if v is not None:
+                                    try:
+                                        worksheet.write_number(i, j, float(v))
+                                    except ValueError:
+                                        worksheet.write(i, j, str(v))
+                    finally:
+                        workbook.close()
+                    return send_file(out.name, mimetype=mime, as_attachment=True, download_name=file_name + '.xlsx')
+        except Exception as e:
+            logger.error('Error downloading query: %s', str(e))
+            abort(400, description=f'Error downloading query: {str(e)} \nsql: {sql}')
 
     def detect_bot(self):
         if request.user_agent.browser in ('google', 'aol', 'baidu', 'bing', 'yahoo'):
