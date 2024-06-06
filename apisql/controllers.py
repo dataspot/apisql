@@ -12,7 +12,7 @@ from .logger import logger
 
 class Controllers():
 
-    FIELD_RE = re.compile('<([-a-z()_]+)$')
+    FIELD_RE = re.compile('<([-a-z0-9()_]+)$')
     PARAM_RE = re.compile(':([-a-z()_]+)$')
 
     def __init__(self, connection_string, max_rows, debug, engine):

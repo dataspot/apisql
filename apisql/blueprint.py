@@ -106,9 +106,6 @@ class APISQLBlueprint(Blueprint):
         sql = request.values.get('query')
         try:
             sql = codecs.decode(sql.encode('ascii'), 'base64').decode('utf8')
-        except Exception:
-            pass
-        try:
             results = self.controllers.query_db_streaming(sql, formatters)
 
             if format == 'csv':
@@ -150,7 +147,7 @@ class APISQLBlueprint(Blueprint):
                     return send_file(out.name, mimetype=mime, as_attachment=True, download_name=file_name + '.xlsx')
         except Exception as e:
             logger.error('Error downloading query: %s', str(e))
-            abort(400, description=f'Error downloading query: {str(e)} \nsql: {sql}')
+            abort(400, description=f'Error downloading query: {repr(e)} \nsql: {sql}')
 
     def detect_bot(self):
         if request.user_agent.browser in ('google', 'aol', 'baidu', 'bing', 'yahoo'):
