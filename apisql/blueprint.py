@@ -105,7 +105,10 @@ class APISQLBlueprint(Blueprint):
 
         sql = request.values.get('query')
         try:
-            sql = codecs.decode(sql.encode('ascii'), 'base64').decode('utf8')
+            try:
+                sql = codecs.decode(sql.encode('ascii'), 'base64').decode('utf8')
+            except Exception:
+                pass
             results = self.controllers.query_db_streaming(sql, formatters)
 
             if format == 'csv':
