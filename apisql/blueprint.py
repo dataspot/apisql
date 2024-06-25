@@ -19,7 +19,7 @@ CONNECTION_STRING = os.environ.get('APISQL__DATABASE_URL')
 
 class APISQLBlueprint(Blueprint):
 
-    def __init__(self, connection_string=CONNECTION_STRING, engine=None, max_rows=MAX_ROWS, debug=False, cache=None):
+    def __init__(self, connection_string=CONNECTION_STRING, engine=None, max_rows=MAX_ROWS, debug=False, cache=None, external_url=None):
         super().__init__('apisql', 'apisql')
         self.controllers = Controllers(
             connection_string, max_rows, debug, engine
@@ -43,6 +43,7 @@ class APISQLBlueprint(Blueprint):
             methods=['GET', 'POST']
         )
         self.cache = cache
+        self.external_url = external_url
 
     def query(self):
         status = []
@@ -70,8 +71,8 @@ class APISQLBlueprint(Blueprint):
                 if self.cache is not None:
                     status.append('cache miss')
                 results = self.controllers.query_db(sql, num_rows=num_rows, page_size=page_size, page=page)
-                if 'download_url' in results:
-                    results['download_url'] = '/'.join(request.base_url.split('/')[:-1]) + '/' + results['download_url']
+                if 'download_url' in results and self.external_url:
+                    results['download_url'] = self.external_url + results['download_url']
                 if self.cache is not None:
                     self.cache.set(key, results)
             else:
