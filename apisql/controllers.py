@@ -4,6 +4,8 @@ from decimal import Decimal
 from datetime import date
 from backports.cached_property import cached_property
 from itertools import islice
+import codecs
+import urllib.parse
 
 from sqlalchemy import create_engine, text
 
@@ -45,6 +47,7 @@ class Controllers():
             raise
 
     def query_db(self, query_str, num_rows, page_size, page):
+        headers = []
         try:
             with self.engine.connect() as connection:
                 count_query = text("select count(1) from (%s) s" % query_str)
@@ -60,6 +63,7 @@ class Controllers():
                 query = text("select * from (%s) s limit %s offset %s" % (query_str, num_rows, offset))
                 logger.debug('executing %r', query)
                 result = connection.execute(query)
+                headers = list(result.keys())
                 rows = list(map(lambda r: r._asdict(), islice(iter(result), 0, num_rows)))
                 rows = [self.jsonable(row) for row in rows]
                 logger.debug('rowcount %r', len(rows))
@@ -68,7 +72,7 @@ class Controllers():
                 'success': False,
                 'error': str(e)
             }
-        return {
+        ret = {
             'success': True,
             'total': count,
             'pages': pages,
@@ -76,6 +80,14 @@ class Controllers():
             'page': page,
             'rows': rows,
         }
+        if headers:
+            b64query = codecs.encode(query_str.encode('utf8'), 'base64').decode('ascii')
+            b64query = urllib.parse.quote(b64query)
+            headers = ';'.join(headers)
+            headers = urllib.parse.quote(headers)
+            ret['download_url'] = '/download?query=%s&headers=%s' % (b64query, headers)
+        return ret
+
 
     def parse_formatters(self, formatters):
         _headers = []

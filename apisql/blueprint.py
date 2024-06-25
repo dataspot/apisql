@@ -70,6 +70,8 @@ class APISQLBlueprint(Blueprint):
                 if self.cache is not None:
                     status.append('cache miss')
                 results = self.controllers.query_db(sql, num_rows=num_rows, page_size=page_size, page=page)
+                if 'download_url' in results:
+                    results['download_url'] = '/'.join(request.base_url.split('/')[:-1]) + '/' + results['download_url']
                 if self.cache is not None:
                     self.cache.set(key, results)
             else:
