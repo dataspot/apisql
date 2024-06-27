@@ -31,6 +31,7 @@ class Controllers():
 
     def query_db_streaming(self, query_str, formatters):
         try:
+            query_str = self.prepare_query(query_str)
             headers, formatters = self.parse_formatters(formatters)
 
             with self.engine.connect() as connection:
@@ -48,6 +49,7 @@ class Controllers():
 
     def query_db(self, query_str, num_rows, page_size, page):
         headers = []
+        query_str = self.prepare_query(query_str)
         try:
             with self.engine.connect() as connection:
                 count_query = text("select count(1) from (%s) s" % query_str)
@@ -88,6 +90,10 @@ class Controllers():
             ret['download_url'] = '/download?query=%s&headers=%s' % (b64query, headers)
         return ret
 
+    def prepare_query(self, query_str):
+        query_str = query_str.strip()
+        query_str = query_str.rstrip(';')
+        return query_str
 
     def parse_formatters(self, formatters):
         _headers = []
