@@ -82,7 +82,7 @@ class APISQLBlueprint(Blueprint):
         return jsonpify(dict(**results, status=status))
 
     def download(self):
-        format = request.values.get('format', 'csv')
+        format = request.values.get('format', 'xlsx')
 
         file_name = request.values.get('filename')
         # Create a default value here in case this parameter is not provided
