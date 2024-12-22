@@ -8,7 +8,7 @@ from io import StringIO
 from flask import Blueprint, Response, request, send_file, abort
 from flask_jsonpify import jsonpify
 
-import xlsxwriter
+import openpyxl
 
 from .controllers import Controllers
 from .logger import logger, logging
@@ -139,15 +139,16 @@ class APISQLBlueprint(Blueprint):
             if format == 'xlsx':
                 with tempfile.NamedTemporaryFile(mode='w+b', suffix='.xlsx') as out:
                     try:
-                        workbook = xlsxwriter.Workbook(out.name)
-                        worksheet = workbook.add_worksheet()
+                        workbook = openpyxl.Workbook()
+                        worksheet = workbook.active
                         for i, row in enumerate(results):
                             for j, v in enumerate(row):
                                 if v is not None:
                                     try:
-                                        worksheet.write_number(i, j, float(v))
+                                        worksheet.cell(row=i+1, column=j+1, value=float(v))
                                     except ValueError:
-                                        worksheet.write(i, j, str(v))
+                                        worksheet.cell(row=i+1, column=j+1, value=str(v))
+                        workbook.save(out.name)
                     finally:
                         workbook.close()
                     return send_file(out.name, mimetype=mime, as_attachment=True, download_name=file_name + '.xlsx')

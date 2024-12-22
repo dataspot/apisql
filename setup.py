@@ -23,7 +23,7 @@ NAME = PACKAGE.replace('_', '-')
 INSTALL_REQUIRES = [
     'psycopg2-binary',
     'flask_jsonpify',
-    'XlsxWriter',
+    'openpyxl',
     'backports.cached-property',
 ]
 LINT_REQUIRES = [
