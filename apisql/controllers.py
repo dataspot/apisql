@@ -16,6 +16,7 @@ class Controllers():
 
     FIELD_RE = re.compile('<([-a-z0-9()_]+)$')
     PARAM_RE = re.compile(':([-a-z()_]+)$')
+    WHITE_RE = re.compile(r'\s+')
 
     def __init__(self, connection_string, max_rows, debug, engine):
         self.connection_string = connection_string
@@ -83,7 +84,9 @@ class Controllers():
             'rows': rows,
         }
         if headers:
-            b64query = codecs.encode(query_str.encode('utf8'), 'base64').decode('ascii')
+            query_str = query_str.strip()
+            query_str = self.WHITE_RE.sub(' ', query_str)
+            b64query = codecs.encode(query_str.encode('utf8'), 'base64').decode('ascii').replace('\n', '')
             b64query = urllib.parse.quote(b64query)
             headers = ';'.join(headers)
             headers = urllib.parse.quote(headers)
