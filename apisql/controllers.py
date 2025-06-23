@@ -132,6 +132,11 @@ class Controllers():
         hdr = h
 
         def _f(x, row):
+            if hdr in row:
+                return row[hdr]
+            for k, v in row.items():
+                if k.startswith(hdr + ':'):
+                    return v
             return row[hdr]
         return _f
 
