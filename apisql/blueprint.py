@@ -159,7 +159,7 @@ class APISQLBlueprint(Blueprint):
     def detect_bot(self):
         if request.user_agent.browser in ('google', 'aol', 'baidu', 'bing', 'yahoo'):
             logger.info('Bot detected %s: %s', request.user_agent.string, request.user_agent.browser)
-        elif any(x in request.user_agent.string.lower() for x in ('applebot', 'yandexbot', 'petalbot')):
+        elif any(x in request.user_agent.string.lower() for x in ('bot', 'crawl', 'spider', 'slurp')):
             logger.info('Bot detected %s: %s', request.user_agent.string, request.user_agent.browser)
         else:
             return False
