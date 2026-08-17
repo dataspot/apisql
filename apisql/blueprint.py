@@ -74,7 +74,10 @@ class APISQLBlueprint(Blueprint):
                 if 'download_url' in results and self.external_url:
                     results['download_url'] = self.external_url + results['download_url']
                 if self.cache is not None:
-                    self.cache.set(key, results)
+                    if results.get('success') and results.get('rows'):
+                        self.cache.set(key, results)
+                    else:
+                        status.append('not cached')
             else:
                 status.append('cache hit')
         else:
